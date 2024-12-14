@@ -133,10 +133,10 @@ model = AutoModel.from_pretrained(model_name)
 # Sử dụng SQLAlchemy để dễ dàng chuyển đổi sang DataFrame
 def get_course():
     connection = mysql.connector.connect(
-        host='14.225.253.200',  # IP address of your DB instance
-        user='root',
-        password='Hoanganh123!@#',
-        database='prse'
+        host='',  # IP address of your DB instance
+        user='',
+        password='',
+        database=''
     )
     cursor = connection.cursor()
 
@@ -178,10 +178,12 @@ def find_course(user_input, max_results=3):
     df = get_course()
     user_input = user_input.lower()
     user_input_embedding = generate_embedding(user_input)
-
+    df['title'] = df['title'].str.lower()
+    df['title'] = df['title'].str.replace(":", " :")
+    df['title'] = df['title'].str.replace(",", " ,")
+    df['title'] = df['title'].str.replace(".", " .")
     course_titles = df['title'].tolist()
     course_embeddings = np.array([generate_embedding(title) for title in course_titles])
-
     cosine_scores = np.dot(course_embeddings, user_input_embedding) / (
                 np.linalg.norm(course_embeddings, axis=1) * np.linalg.norm(user_input_embedding))
 
